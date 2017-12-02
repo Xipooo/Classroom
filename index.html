@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
-    <head></head>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script> 
+            $(function(){
+              $("#googlePage").load("https://sites.google.com/view/ccjcra/"); 
+            });
+            </script> 
+    </head>
     <body>
-        <iframe src="https://sites.google.com/view/ccjcra/" name="targetframe" allowTransparency="true" scrolling="no" frameborder="0" >
-        </iframe>
+        <div id="googlePage"></div>
     </body>
 </html>
