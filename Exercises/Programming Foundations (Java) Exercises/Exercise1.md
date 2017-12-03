@@ -1,6 +1,6 @@
 # Exercise 1
 <ul>
-    <li>Create a new Github repository called CodingFromScratch</li>
+    <li>Create a new Github repository called ProgrammingFoundationsJava</li>
     <li>Clone the repository to a subfolder in your Projects folder</li>
     <li>Create a new branch in your local repository called Exercise1</li>
     <li>Create a new HTML page</li>
