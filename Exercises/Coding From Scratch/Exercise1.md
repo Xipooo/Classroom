@@ -1,13 +1,15 @@
 # Exercise 1
 <ul>
-    <li>Create a new Github repository called CodingFromScratch</li>
-    <li>Clone the repository to a subfolder in your Projects folder</li>
-    <li>Create a new branch in your local repository called Exercise1</li>
-    <li>Create a new HTML page</li>
+    <li>Using your terminal window, do the following:</li>
     <ul>
-        <li>Name it index.html Give it a title of “Game Of Thrones Characters” Include an h2 tag with “GOT Characters” followed by…</li>
-        <li>Include a numbered list of at least 5 GOT Characters in alphabetical order Include an h3 tag with “Stark Direwolves” followed by… </li>
-        <li>Create an unordered list of the 6 Stark Direwolves Add a link to http://www.hbo.com/game-of-thrones and giv it the text of “HBO Game Of Thrones Webpage”</li>
-        </ul>
-    <li>Commit and merge your changes to your local repository and Github</li>
+    <li>Navigate to the root of your hard drive</li>
+    <li>Create a folder at the root of your hard drive called __Projects__</li>
+    </ul>
+    <li>Navigate to your *Projects* folder</li>
+    <li>Create a subfolder in your *Projects* folder called __CodingFromScratch__</li>
+    <li>Navigate to your *CodingFromScratch* subfolder</li>
+    <li>Open your code editor (VSCode or Atom) from within your *CodingFromScratch* subfolder</li>
+    <li>Close your code editor (Close from with your editor, not command line)</li>
+    <li>Navigate back to the *Projects* folder</li>
+    <li>Remove the *CodingFromScratch* folder</li>
 </ul>
