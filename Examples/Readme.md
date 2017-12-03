@@ -1,4 +1,4 @@
-# Classroom Exercises
+# Classroom Examples
 [Coding From Scratch](./Coding%20From%20Scratch)
 
 [Front End Foundations](./Front%20End%20Foundations)
