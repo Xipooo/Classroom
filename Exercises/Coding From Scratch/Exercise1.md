@@ -12,4 +12,6 @@
     <li>Close your code editor (Close from with your editor, not command line)</li>
     <li>Navigate back to the *Projects* folder</li>
     <li>Remove the *CodingFromScratch* folder</li>
+    <li>Notify your instructor you have completed the exercise</li>
+    <li>Check if any fellow students need help with the exercise</li>
 </ul>
