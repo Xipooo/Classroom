@@ -13,5 +13,5 @@
     <li>Verify the appropriate alert appears based on the value you set for myFavGOTChar</li>
     <li>Commit and merge your changes to your local repository and Github</li>
     <li>Notify your instructor of your Github Repository Branch URL and that you have completed the exercise</li>
-    <li>Check if any fellow students need help with the exercise</li>
+    <li><em><strong>Check if any fellow students need help with the exercise</strong></em></li>
 </ul>

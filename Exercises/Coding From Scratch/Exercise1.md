@@ -13,5 +13,5 @@
         <li>Remove the <em>CodingFromScratch</em> folder</li>
     </ul>
     <li>Notify your instructor you have completed the exercise</li>
-    <li>Check if any fellow students need help with the exercise</li>
+    <li><em><strong>Check if any fellow students need help with the exercise</strong></em></li>
 </ul>

@@ -8,5 +8,5 @@
     <li>Make the last item of the last column in the houses table appear in black.</li>
     <li>Commit and merge your changes to your local repository and Github</li>
     <li>Notify your instructor of your Github Repository Branch URL and that you have completed the exercise</li>
-    <li>Check if any fellow students need help with the exercise</li>
+    <li><em><strong>Check if any fellow students need help with the exercise</strong></em></li>
 </ul>
