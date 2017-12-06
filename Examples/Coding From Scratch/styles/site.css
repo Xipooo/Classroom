@@ -9,12 +9,22 @@ th {
     color: darkblue;
     font-family: Helvetica;
 }
-body {
-    color: #11ff11
-}
+
 .Required {
     color: red;
 }
 #Male{
     height: 2em;
+}
+a:hover {
+    color: darkorchid;
+    background-color: yellowgreen;
+}
+
+.header :first-child {
+    color: red;
+    font-size: large;
+}
+.header :nth-child(even) {
+    color: green;
 }
