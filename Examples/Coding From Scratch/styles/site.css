@@ -1,0 +1,20 @@
+h1 {
+    color: darkred;
+}
+td {
+    color: brown;
+    background-color: lightblue;
+}
+th {
+    color: darkblue;
+    font-family: Helvetica;
+}
+body {
+    color: #11ff11
+}
+.Required {
+    color: red;
+}
+#Male{
+    height: 2em;
+}

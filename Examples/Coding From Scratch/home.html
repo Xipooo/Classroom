@@ -3,6 +3,7 @@
 
 <head>
     <title>My Home Page</title>
+    <link type="text/css" rel="stylesheet" href="./styles/site.css" />
 </head>
 
 <body>
@@ -19,16 +20,16 @@
     </nav>
     <h1>Home Page</h1>
     <form action="index.html" method="GET">
-        <label for="FirstName">First Name:</label>
+        <label for="FirstName" id="firstNameLabel" class="Required">First Name:</label>
         <input type="text" id="FirstName" name="firstName" required="true" /><br>
-        <label for="LastName">Last Name:</label>
-        <input type="text" id="LastName" name="lastName" /><br>
+        <label for="LastName" id="lastNamelabel" class="Required">Last Name:</label>
+        <input type="text" id="LastName" name="lastName" required="true" /><br>
         <label for="Email">Email:</label>
         <input type="email" id="Email" name="email" /><br>
         <label for="Age">Age:</label>
         <input type="number" id="Age" name="age" min="1" max="120" /><br>
         <textarea rows="10" cols="50" name="message" id="Message" maxlength="100"></textarea><br>
-        <select name="color">
+        <select name="color" class="Required">
             <option value="R">Red</option>
             <option value="B">Blue</option>
             <option value="W">White</option>
