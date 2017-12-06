@@ -18,6 +18,28 @@
         </li>
     </nav>
     <h1>Home Page</h1>
+    <form action="index.html" method="GET">
+        <label for="FirstName">First Name:</label>
+        <input type="text" id="FirstName" name="firstName" required="true" /><br>
+        <label for="LastName">Last Name:</label>
+        <input type="text" id="LastName" name="lastName" /><br>
+        <label for="Email">Email:</label>
+        <input type="email" id="Email" name="email" /><br>
+        <label for="Age">Age:</label>
+        <input type="number" id="Age" name="age" min="1" max="120" /><br>
+        <textarea rows="10" cols="50" name="message" id="Message" maxlength="100"></textarea><br>
+        <select name="color">
+            <option value="R">Red</option>
+            <option value="B">Blue</option>
+            <option value="W">White</option>
+        </select><br>
+        <input type="radio" id="WeatherSun" name="weather" value="Sun"/><label for="WeatherSun">Sun</label>
+        <input type="radio" id="WeatherClouds" name="weather" value="Clouds"/><label for="WeatherClouds">Clouds</label>
+        <input type="radio" id="WeatherRain" name="weather" value="Rain"/><label for="WeatherRain">Rain</label>
+        <input type="radio" id="Female" name="sex" value="Female"/><label for="Female">Female</label>
+        <input type="radio" id="Male" name="sex" value="Male"/><label for="Male">Male</label>
+        <br><input type="submit" value="Done" />
+    </form>
 </body>
 
 </html>
