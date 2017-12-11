@@ -1,7 +1,25 @@
 //This will write to the console window the product of two values
-function doAlert(value1, value2) {
-    //var result = value1 + value2;
-    console.log((++value1 + value2));
+function doAlert() {
+    var myFruits = ["Apples", "Oranges", "Pears", "Bananas"];
+
+    //var i = 0;
+    // while (i < 3) {
+    //     console.log(myFruits[i]);
+    //     ++i;
+    // }
+
+    //for (var i = 0; i < myFruits.length; ++i){
+    //     var fruit = myFruits[i];
+    //     console.log(fruit);
+    // }
+
+    // for (var fruit of myFruits){
+    //     console.log(fruit);
+    // }
+
+    myFruits.forEach(function(fruit) {
+        return console.log(fruit);
+    });
 }
 
 function getFirstValue() {
