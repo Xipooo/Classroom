@@ -7,4 +7,5 @@
     <li>Use the npm command line to install express and react</li>
     <li>Use Gitkraken to ignore the Node_Modules folder for your Git repository</li>
     <li>Commit and merge your changes to your local repository and Github</li>
+    <li><em><strong>Check if any fellow students need help with the exercise</strong></em></li>
 </ul>
