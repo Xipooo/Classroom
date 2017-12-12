@@ -18,7 +18,7 @@ function doAlert() {
     // }
 
     myFruits.forEach(function(fruit) {
-        return console.log(fruit);
+        console.log(fruit);
     });
 }
 
