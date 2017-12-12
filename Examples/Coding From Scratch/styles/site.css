@@ -28,3 +28,15 @@ a:hover {
 .header :nth-child(even) {
     color: green;
 }
+
+#div2 {
+    height: 200px;
+    width: 200px;
+    background-color: blue;
+}
+
+.divv {
+    height:100px;
+    width:100px;
+    background-color: red;
+}
