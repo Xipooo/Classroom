@@ -11,8 +11,8 @@
             <li>House: "Lannister"</li>
             <li>ChildCount: 3</li>
         </ul>
-        <li>Use the console.log method to write GOTCharacter to the console window</li>
-        <li>Use the console.log method to write the hoursInDay constant to the console window</li>
+        <li>Use the console.log method to write the value of GOTCharacter to the console window</li>
+        <li>Use the console.log method to write the value of hoursInDay to the console window</li>
     </ul>
     <li>Commit and merge your changes to your local repository and Github</li>
     <li><em><strong>Check if any fellow students need help with the exercise</strong></em></li>
