@@ -1,24 +1,14 @@
-function addTwoNumbers(value1, value2) {
-    if (typeof value1 == "number" && typeof value2 == "number") {
-        return value1 + value2;
-    }
-    else {
-        return "Invalid entry";
-    }
-}
-console.log(addTwoNumbers(8, 9));
+//let myVariable = new Object();
+let myObject = { myProperty: 8, myName: "Steve" };
+//let myArray = ["Apple", "Orange", "Banana"];
 
-if (true || false){
-    return console.log("true");
-}
-else {
-    return console.log("false");
-}
+//myVariable.myProperty = 8;
 
-let myString = "Hello";
-let myOtherString = myString;
+console.log(myObject.myName);
+console.log(myObject["myProperty"]);
 
-myOtherString = "World";
+// myVariable = null;
 
-console.log(typeof myString);
-console.log(typeof myOtherString);
+// if (myVariable == null){
+
+// }
