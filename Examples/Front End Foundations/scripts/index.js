@@ -1,14 +1,13 @@
-//let myVariable = new Object();
-let myObject = { myProperty: 8, myName: "Steve" };
-//let myArray = ["Apple", "Orange", "Banana"];
+const myFunction = (param1, param2) => param1 + param2;
 
-//myVariable.myProperty = 8;
+let result = myFunction(2,4);
 
-console.log(myObject.myName);
-console.log(myObject["myProperty"]);
+console.log(result);
 
-// myVariable = null;
+const timesThree = num => num * 3;
 
-// if (myVariable == null){
+console.log(timesThree(4));
 
-// }
+const noParam = () => console.log("no parameters");
+
+noParam();
