@@ -1,13 +1,29 @@
-const myFunction = (param1, param2) => param1 + param2;
+// function addTwoNumbers(value1, value2) {
+//     if (typeof value1 == "number" && typeof value2 == "number") {
+//         return value1 + value2;
+//     }
+//     else {
+//         return "Invalid entry";
+//     }
+// }
+// console.log(addTwoNumbers(8, 9));
 
-let result = myFunction(2,4);
+// if (true || false){
+//     return console.log("true");
+// }
+// else {
+//     return console.log("false");
+// }
 
-console.log(result);
+// let myString = "Hello";
+// let myOtherString = myString;
 
-const timesThree = num => num * 3;
+// myOtherString = "World";
 
-console.log(timesThree(4));
+// console.log(typeof myString);
+// console.log(typeof myOtherString);
 
-const noParam = () => console.log("no parameters");
+const defParam = (a, b = 20) => a * b;
 
-noParam();
+console.log(defParam(3, 5));
+console.log(defParam(6));
