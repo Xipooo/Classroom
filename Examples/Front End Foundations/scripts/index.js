@@ -9,6 +9,5 @@
 // })();
 
 function addWords() {
-    let exampleH3 = document.getElementById("example");
-    exampleH3.innerHTML = "Welcome to my page!";
+    document.getElementById("example").innerHTML = "Welcome to my page!";
 }
