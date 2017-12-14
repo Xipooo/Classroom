@@ -1,16 +1,14 @@
-var variable = "Global Scope";
-
-function myFunction(variable) {
-    //let variable = "Function Scope";
-    if (variable == "Global Scope") {
-        var variable = "Local Scope";
-        console.log(variable);
+var nameOutro = ".";
+(function () {
+    function popularName(firstName) {
+        const nameIntro = "The popular name is ";
+        function lastName(aLastName) {
+            return nameIntro + firstName + " " + aLastName + nameOutro;
+        }
+        return lastName;
     }
-    else {
-        console.log(variable);
-    }
-    console.log(variable);
-}
 
-myFunction(variable);
-console.log(variable);
+    let aPopularName = popularName("Andrew");
+    console.log(aPopularName("Jackson"));
+
+})();
