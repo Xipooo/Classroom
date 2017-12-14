@@ -1,14 +1,20 @@
-var nameOutro = ".";
 (function () {
-    function popularName(firstName) {
-        const nameIntro = "The popular name is ";
-        function lastName(aLastName) {
-            return nameIntro + firstName + " " + aLastName + nameOutro;
+    let person = {
+        firstName: "John",
+        lastName: "Smith",
+        getFullName: function() {
+            console.log(this.firstName + " " + this.lastName);
         }
-        return lastName;
     }
+    person.getFullName();
 
-    let aPopularName = popularName("Andrew");
-    console.log(aPopularName("Jackson"));
-
+    let carMiles = {
+        odometer: 5000,
+        traveled: 250,
+        getUpdatedOdometer: function() {
+            console.log(this.odometer + this.traveled);
+        }
+    };
+    
+    carMiles.getUpdatedOdometer();
 })();
