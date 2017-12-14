@@ -1,13 +1,5 @@
-// (function () {
-//     let myButtons = document.getElementsByTagName("button");
-//     let myButton = document.getElementById("myButton");
-//     let myClassButtons = document.getElementsByClassName("aButton");
-
-//     console.log(myButtons);
-//     console.log(myButton);
-//     console.log(myClassButtons);
-// })();
-
-function addWords() {
-    document.getElementById("example").innerHTML = "Welcome to my page!";
+const renderName = () => {
+    let textEnteredElement = document.getElementById("textEntered");
+    textEnteredElement.innerHTML += document.getElementById("name").value;
+    console.log(document.getElementById("name").value);
 }
