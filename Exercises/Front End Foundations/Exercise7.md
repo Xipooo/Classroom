@@ -4,7 +4,7 @@
     <li>Using the arrow syntax, create a function called UndefinedCheck that does the following:</li>
     <ul>
         <li>Takes one parameter called valueToCheck</li>
-        <li>If the valueToCheck parameter is undefined return false otherwise return true</li>
+        <li>If the valueToCheck parameter is undefined return the boolean value false otherwise return boolean value true</li>
         <li>Use the not operator (!) in your if expression</li>
     </ul>
     <li>Refactor the if statement from Exercise 6 to use the UndefinedCheck function and the turnary operator to determine what to write to the console window</li>
