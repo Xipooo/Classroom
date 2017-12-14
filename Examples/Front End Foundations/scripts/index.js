@@ -1,21 +1,14 @@
-(function () {
-    let midArray = [12, 13];
-    let normArray = [1, 2, 3, ...midArray, 4, 5];
+// (function () {
+//     let myButtons = document.getElementsByTagName("button");
+//     let myButton = document.getElementById("myButton");
+//     let myClassButtons = document.getElementsByClassName("aButton");
 
-    console.log(normArray);
+//     console.log(myButtons);
+//     console.log(myButton);
+//     console.log(myClassButtons);
+// })();
 
-    let arr = ["a", "b", "c", "d"];
-    let arr2 = ["e", "f", "g", "h"];
-
-    let arr3 = [...arr, ...arr2];
-    console.log(arr3);
-
-    let obj1 = { name: "John", age: 29};
-    let obj2 = { name: "Alice", email: "alice@email.com"};
-
-    let copyObj = { ...obj1 };
-
-    let mergeObj = { ...obj1, ...obj2 };
-
-    console.log(mergeObj);
-})();
+function addWords() {
+    let exampleH3 = document.getElementById("example");
+    exampleH3.innerHTML = "Welcome to my page!";
+}
