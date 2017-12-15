@@ -1,35 +1,22 @@
-(function () {
-    let day = 8;
-    let dayName;
+(() => {
 
-    switch (day){
-        case 1:
-            dayName = "Sunday";
-            break;
-        case 2:
-            dayName = "Monday";
-            break;
-        case 3:
-            dayName = "Tuesday";
-            break;
-        case 4:
-            dayName = "Wednesday";
-            break;
-        case 5:
-            dayName = "Thursday";
-            break;
-        case 6:
-            dayName = "Friday";
-            break;
-        case 7:
-        case 8:
-        case 9:
-            dayName = "Saturday";
-            break;
-        default:
-            dayName = "Invalid day";
-            break;
+    try {
+        alert("Start of code");
+
+        //randomVariable;
+
+        alert("End of code");
     }
-    console.log(dayName);
-    return;
+    catch (error) {
+        console.log(error.message);
+    }
+    finally {
+        alert("Finally was ran");
+    }
+
 })();
+
+(() =>
+{
+    alert("This is my other function");
+})()
