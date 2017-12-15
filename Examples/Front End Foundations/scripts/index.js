@@ -1,14 +1,10 @@
-class aClass {
-    constructor(name, age) {
-        this.name = name;
-        this.age = age;
-    }
-    sayName() {
-        alert(this.name);
-    }
-    sayAge() {
-        alert(this.age);
+class Vehicle {
+    constructor(make, model, year) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
     }
 }
-const myInstance = new aClass("Andrew", 30);
-myInstance.sayName();
+
+let car = new Vehicle("Nissan", "Rogue", 2017);
+console.log(car);
