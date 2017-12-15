@@ -1,15 +1,14 @@
-function aClass(name, age){
-    this.name = name;
-    this.age = age;
+class aClass {
+    constructor(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    sayName() {
+        alert(this.name);
+    }
+    sayAge() {
+        alert(this.age);
+    }
 }
-
-aClass.prototype.sayName = function () {
-    alert(this.name);
-}
-
-aClass.prototype.sayAge = function () {
-    alert(this.age);
-}
-
-let myInstance = new aClass("Andrew", 30);
+const myInstance = new aClass("Andrew", 30);
 myInstance.sayName();
