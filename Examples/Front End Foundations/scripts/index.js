@@ -1,18 +1,35 @@
 (function () {
-    const $c = (element) => document.createElement(element);
-    const $t = (tag) => document.getElementsByTagName(tag);
-    const $id = (id) => document.getElementById(id);
+    let day = 8;
+    let dayName;
 
-    const addChild = () => {
-        let newElem = $c("div");
-        newElem.innerHTML = "This is a new Element created by append.";
-
-        let example = $id("example");
-        example.appendChild(newElem);
-        console.log("addChild was called");
+    switch (day){
+        case 1:
+            dayName = "Sunday";
+            break;
+        case 2:
+            dayName = "Monday";
+            break;
+        case 3:
+            dayName = "Tuesday";
+            break;
+        case 4:
+            dayName = "Wednesday";
+            break;
+        case 5:
+            dayName = "Thursday";
+            break;
+        case 6:
+            dayName = "Friday";
+            break;
+        case 7:
+        case 8:
+        case 9:
+            dayName = "Saturday";
+            break;
+        default:
+            dayName = "Invalid day";
+            break;
     }
-
-    let clickMeButton = $id("clickMeButton");
-    clickMeButton.addEventListener("click", addChild);
-
+    console.log(dayName);
+    return;
 })();
