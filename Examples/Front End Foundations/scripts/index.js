@@ -1,22 +1,13 @@
 (() => {
+    let age = 18;
+    let verified = false;
 
-    try {
-        alert("Start of code");
+    const isOldEnough = 
+    age >= 18
+        ? verified 
+            ? "Welcome to our site."
+            : "Sorry but you must be verified" 
+        : "Sorry, you must be 18 or older!";
 
-        //randomVariable;
-
-        alert("End of code");
-    }
-    catch (error) {
-        console.log(error.message);
-    }
-    finally {
-        alert("Finally was ran");
-    }
-
+    console.log(isOldEnough);
 })();
-
-(() =>
-{
-    alert("This is my other function");
-})()
