@@ -1,13 +1,15 @@
-(() => {
-    let age = 18;
-    let verified = false;
+function aClass(name, age){
+    this.name = name;
+    this.age = age;
+}
 
-    const isOldEnough = 
-    age >= 18
-        ? verified 
-            ? "Welcome to our site."
-            : "Sorry but you must be verified" 
-        : "Sorry, you must be 18 or older!";
+aClass.prototype.sayName = function () {
+    alert(this.name);
+}
 
-    console.log(isOldEnough);
-})();
+aClass.prototype.sayAge = function () {
+    alert(this.age);
+}
+
+let myInstance = new aClass("Andrew", 30);
+myInstance.sayName();
