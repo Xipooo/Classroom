@@ -1,20 +1,36 @@
-class Person {
-    constructor(name){
-        this.name = name;
+class Car {
+    constructor(make, model, year) {
+        this._make = make;
+        this._model = model;
+        this._year = year;
     }
 
-    run() {
-        console.log(this.name + " is running.");
+    get make() {
+        return this._make;
     }
-    walk() {
-        console.log(this.name + " is walking.");
+    set make(value){
+        const possibleMakes = ["Honda", "Toyota", "Nissan", "Ford"];
+
+        if (possibleMakes.includes(value)){
+            this._make = value;
+        }
+        else {
+            throw Error("Make must be " + possibleMakes);
+        }
     }
-    greeting() {
-        console.log("Hello, my name is " + this.name + ".");
+
+    get description() {
+        return this._year + " " + this._make + " " + this._model;
     }
 }
 
-let Andrew = new Person("Andrew");
-Andrew.run();
-Andrew.walk();
-Andrew.greeting();
+
+try {
+    let myCar = new Car("Nissan", "Rogue", 2017);
+    myCar.make = "Datsun";
+}
+catch(error){
+    alert(error.message);
+}
+
+console.log(myCar.description);
