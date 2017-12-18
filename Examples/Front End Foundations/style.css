@@ -1,0 +1,82 @@
+/*Students Add Code Here*/
+.blue {
+    background-color: blue;
+    font-size: xx-large;
+}
+
+
+
+
+
+/*Styling for the website*/
+body{
+    background-color: #262326;
+    background-image: url("images/manypugs.jpg");
+    background-size: contain;
+}
+
+button {
+    margin-left: 47%;
+}
+.entry {
+    background-image: url("images/kittens-cat-cat-puppy-rush-45170.jpeg");
+    background-size: cover;
+    height: 700px;
+    width: 100%;
+}
+
+header {
+    background-color: transparent;
+    color: #262326;
+    text-align: center;
+    font-size: 50px;
+    font-family: Georgia;
+    font-weight:900;
+    text-shadow: 2px 2px #c2736b;
+}
+
+h1{
+    text-align: center;
+    font-family: Georgia;
+    color: #c2736b;
+}
+
+p{
+    text-align: center;
+    font-family: Georgia;
+
+}
+
+.p1{
+    padding-left: 100px;
+    padding-right: 100px;
+    padding-bottom: 20px;
+}
+
+.panel {
+    background-color: #262326;
+   /* margin-right: 70px;
+    margin-left: 70px;*/
+    margin-bottom: 8%;
+    padding: 10px;
+    /*width: 100%;*/
+    color:#F1EFE9;
+}
+
+.pets {
+    background-color: #c2736b;
+    margin-right: 20%;
+    margin-left: 20%;
+    margin-bottom: 5%;
+    padding-bottom: 5%;
+    padding-top: 2%;
+    font-size: 40px;
+    color:#262326;
+}
+
+img {
+    /*padding-top: 20px;*/
+    /*border-radius: 8%;*/
+    display: block;
+    margin: auto;
+}
