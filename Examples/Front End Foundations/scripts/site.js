@@ -1,3 +1,0 @@
-// (function () { 
-//     let aPopularName = "Steve";
-// })();
