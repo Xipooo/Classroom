@@ -1,22 +1,30 @@
 class Person {
-    constructor(name, age)
+    constructor(firstName, lastName)
     {
-        this.name = name;
-        this.age = age;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
     greeting() {
         console.log(
-            "Hello my name is " + this.name + " and I am " + this.age + "."
+            "Hello my name is " + this.firstName + "."
         );
     }
 }
 
-var andrew = new Person("Andrew", 30);
-var mike = andrew;
-var frank = mike;
+class NewStudent extends Person {
+    constructor(studentID, firstName, lastName){
+        super(firstName, lastName);
+        this.studentID = studentID;
+    }
 
-frank.age = 50;
+    studentInfo() {
+        console.log(this.studentID + " " + this.firstName + " " + this.lastName);
+    }
+}
 
-andrew.greeting();
-mike.greeting();
-frank.greeting();
+let student = new NewStudent(12, "John", "Smith");
+student.greeting();
+student.studentInfo();
+
+let person = new Person("Steve", "Bishop");
+person.greeting();
