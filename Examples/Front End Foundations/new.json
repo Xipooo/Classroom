@@ -1,9 +1,0 @@
-{
-    "name": "John",
-    "age": 31,
-    "cars": [
-        { "make": "dodge", "model": "caravan" },
-        { "make": "honda", "model": "civic" },
-        { "make": "ford", "model": "mustang"}
-    ]
-}
