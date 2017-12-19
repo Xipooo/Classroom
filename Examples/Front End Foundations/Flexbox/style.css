@@ -44,8 +44,29 @@
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
 }
 .image-grid-item {
     width: 235px;
     height: 250px;
+}
+.first-item {
+    order: 1;
+}
+.last-item {
+    order: -1;
+}
+.footer {
+    display: flex;
+    justify-content: space-between;
+}
+.footer-item {
+    border: 1px solid white;
+    background-color: lightblue;
+    height: 200px;
+    flex: 1;
+}
+.footer-three {
+    flex: 2;
 }
