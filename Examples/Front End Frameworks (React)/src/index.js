@@ -1,11 +1,21 @@
-class Dog {
-    constructor(breed) {
-        this.breed = breed;
+class BaseClass {
+    constructor() {}
+
+    setTitle(title){
+        this.title = title;
     }
-    rollOver(times){
-        console.log(`The ${this.breed} rolled over ${times} times.`);
+
+    printTitle() {
+        console.log(`Title: ${this.title}`);
     }
 }
 
-const sparky = new Dog("Dachshund");
-sparky.rollOver(5);
+class SubClass extends BaseClass {
+    constructor() {
+        super();
+        this.setTitle("This is the class based SubClass");
+    }
+}
+
+const s = new SubClass();
+s.printTitle();
