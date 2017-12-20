@@ -1,5 +1,9 @@
-import * as First from './first.js';
-import {test} from './first.js';
+import React, { createElement } from 'react';
+import ReactDOM from 'react-dom';
 
-console.log(First.test(5, 'hi'));
-console.log(test(6, 'hello'));
+const items = ["Bread", "Milk", "Eggs", "Tea"];
+const listItems = items.map((item) => (<li>{item}</li>));
+
+const List = (props) => (<ul>{props.items}</ul>);
+
+ReactDOM.render(<List items={listItems} />, document.getElementById('root'));
