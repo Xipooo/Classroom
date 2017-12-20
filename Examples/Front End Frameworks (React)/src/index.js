@@ -1,13 +1,15 @@
 import React, { createElement } from 'react';
 import ReactDOM from 'react-dom';
 
-const item1 = "Apples";
-const item2 = "Oranges";
+const groceryList = (item1, item2) => 
+    (
+        <ul>
+            <li>{item1}</li>
+            <li>{item2}</li>
+        </ul>
+    );
 
 ReactDOM.render(
-    <ul>
-        <li>{item1}</li>
-        <li>{item2}</li>
-    </ul>,
+    groceryList("Apples", "Pears"),
     document.getElementById('root')
 );
