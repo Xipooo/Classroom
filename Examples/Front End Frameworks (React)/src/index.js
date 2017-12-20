@@ -1,13 +1,10 @@
-const numbers = [72, 9, 16, 3];
-
-for (let i = 0; i < numbers.length; i++){
-    console.log(numbers[i]);
+function Dog(breed){
+    this.breed = breed;
 }
 
-for (let i in numbers){
-    console.log(numbers[i]);
+Dog.prototype.rollOver = function(times){
+    console.log(`The ${this.breed} rolled over ${times} times.`);
 }
 
-for (let number of numbers){
-    console.log(number);
-}
+const sparky = new Dog("Dachshund");
+sparky.rollOver(5);
