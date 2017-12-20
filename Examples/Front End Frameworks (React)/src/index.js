@@ -1,5 +1,11 @@
-import * as First from './first.js';
-import {test} from './first.js';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-console.log(First.test(5, 'hi'));
-console.log(test(6, 'hello'));
+ReactDOM.render(
+    React.createElement(
+        'div',
+        null,
+        React.createElement('h1', null, 'Hello world!'), 
+        React.createElement('h3', null, 'Brought To You By The Dude')),
+    document.getElementById('root')
+);
