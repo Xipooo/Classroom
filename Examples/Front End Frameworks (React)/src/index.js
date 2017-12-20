@@ -1,16 +1,13 @@
-const Example = {
-    x: 81,
-    add: function() {
-        return this.x + 1;
-    }
+const numbers = [72, 9, 16, 3];
+
+for (let i = 0; i < numbers.length; i++){
+    console.log(numbers[i]);
 }
 
-const traditionalResult = Example.add();
-console.log(traditionalResult);
-
-const Example2 = {
-    x: 81,
-    add: (x) => x + 1
+for (let i in numbers){
+    console.log(numbers[i]);
 }
-const arrowResult = Example2.add(99);
-console.log(arrowResult);
+
+for (let number of numbers){
+    console.log(number);
+}
