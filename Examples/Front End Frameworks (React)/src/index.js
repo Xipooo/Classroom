@@ -1,21 +1,5 @@
-class BaseClass {
-    constructor() {}
+import * as First from './first.js';
+import {test} from './first.js';
 
-    setTitle(title){
-        this.title = title;
-    }
-
-    printTitle() {
-        console.log(`Title: ${this.title}`);
-    }
-}
-
-class SubClass extends BaseClass {
-    constructor() {
-        super();
-        this.setTitle("This is the class based SubClass");
-    }
-}
-
-const s = new SubClass();
-s.printTitle();
+console.log(First.test(5, 'hi'));
+console.log(test(6, 'hello'));
