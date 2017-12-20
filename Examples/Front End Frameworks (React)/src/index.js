@@ -1,15 +1,20 @@
 import React, { createElement } from 'react';
 import ReactDOM from 'react-dom';
 
-const GroceryList = (props) => 
-    (
-        <ul>
-            <li>{props.item1}</li>
-            <li>{props.item2}</li>
-        </ul>
-    );
+const items = ["Bread", "Milk", "Eggs", "Tea"];
+const listItems = [];
+
+for (let i = 0; i < items.length; i++){
+    listItems.push(<li key={i}>{items[i]}</li>);
+}
+
+const List = (props) => (
+    <ul>
+        {props.items}
+    </ul>
+);
 
 ReactDOM.render(
-    <GroceryList item1="Apples" item2="Pears" />,
+    <List items={listItems} />, 
     document.getElementById('root')
 );
