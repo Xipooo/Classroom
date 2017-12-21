@@ -1,49 +1,32 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
 
-class Description extends React.Component {
-    constructor(props) { super(props) }
-
-    render() {
-        return (<p>Your last name is {this.props.lastName } and you are {this.props.age} years old.</p>);
-    }
-}
-
-class Hello extends React.Component {
+class BankAccount extends Component {
     constructor(props) {
         super(props);
-        console.log("constructor was called");
+        this.state = {
+            accountBalance: 25.00
+        };
     }
 
-    componentDidMount() {
-        console.log("componentDidMount was called");
-    }
-
-    componentWillReceiveProps(props){
-        console.log("componentWillReceiveProps was called");
+    increment() {
+        this.setState((oldState) => 
+            { accountBalance: oldState.accountBalance + parseInt(oldState.incrementValue) });
     }
 
     render() {
-        console.log("render was called")
         return (
             <div>
-                <h1>Hello, {this.props.name}</h1>
-                <Description lastName={this.props.lastName} age={this.props.age} />
+                <h3>Savings Account Balance: ${this.state.accountBalance}</h3>
+                <input type="number" onChange={(event) => this.setState({ incrementValue: event.target.value })
+                } />
+                <button onClick={this.increment.bind(this)}>Increase Amount</button>
             </div>
         );
     }
 }
 
-Hello.propTypes = {
-    name: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    age: PropTypes.number.isRequired
-}
-
 ReactDOM.render(
-    <div>
-        <Hello name='Marty' lastName="McFly" age={"Steve"} />
-    </div>,
+    <BankAccount />,
     document.getElementById('root')
 );
