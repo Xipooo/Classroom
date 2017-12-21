@@ -36,13 +36,9 @@ class Hello extends React.Component {
     }
 }
 
-
-
 ReactDOM.render(
     <div>
         <Hello name='Marty' lastName="McFly" age={"Steve"} />
-        {/* <Hello name='Tyler' lastName="Fuqua" age={29} />
-        <Hello name='Marshall' lastName="Frink" age={12} /> */}
     </div>,
     document.getElementById('root')
 );
