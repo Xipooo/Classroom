@@ -1,26 +1,43 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-class BankAccount extends Component {
+class Balance extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            accountBalance: 25.00
-        };
     }
 
-    increment() {
-        this.setState((oldState) => 
-            { accountBalance: oldState.accountBalance + parseInt(oldState.incrementValue) });
+    shouldComponentUpdate(nextProps, nextState){
+        return (nextProps.accountBalance !== this.props.accountBalance);
     }
 
     render() {
         console.log("Rendering");
+        return <h3>Savings Account Balance: ${this.props.accountBalance}</h3>
+    }
+}
+class BankAccount extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            accountBalance: 25.00,
+            incrementValue: 0
+        };
+    }
+
+    increment() {
+        this.setState(
+            { accountBalance: this.state.accountBalance + parseInt(this.state.incrementValue) });
+    }
+
+    updateAmount(event) {
+        this.setState({ incrementValue: parseInt(event.target.value) });
+    }
+
+    render() {
         return (
             <div>
-                <h3>Savings Account Balance: ${this.state.accountBalance}</h3>
-                <input type="number" onChange={(event) => this.setState({ incrementValue: event.target.value })
-                } />
+                <Balance accountBalance={this.state.accountBalance} />
+                <input type="number" onChange={this.updateAmount.bind(this)} />
                 <button onClick={this.increment.bind(this)}>Increase Amount</button>
             </div>
         );
