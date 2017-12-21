@@ -13,8 +13,6 @@ class Hello extends React.Component {
     constructor(props) {
         super(props);
         console.log("constructor was called");
-        this.lastName = props.lastName;
-        this.age = props.age;
     }
 
     componentDidMount() {
