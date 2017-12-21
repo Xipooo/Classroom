@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 
 class Description extends React.Component {
     constructor(props) { super(props) }
@@ -32,6 +33,12 @@ class Hello extends React.Component {
             </div>
         );
     }
+}
+
+Hello.propTypes = {
+    name: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
+    age: PropTypes.number.isRequired
 }
 
 ReactDOM.render(
