@@ -15,6 +15,7 @@ class BankAccount extends Component {
     }
 
     render() {
+        console.log("Rendering");
         return (
             <div>
                 <h3>Savings Account Balance: ${this.state.accountBalance}</h3>
