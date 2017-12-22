@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+const Hello = (props) =>
+    <div>
+        <h1>Hello, {props.name}</h1>
+    </div>
+
 class Balance extends Component {
     constructor(props) {
         super(props);
     }
 
-    shouldComponentUpdate(nextProps, nextState){
+    shouldComponentUpdate(nextProps, nextState) {
         return (nextProps.accountBalance !== this.props.accountBalance);
     }
 
@@ -25,6 +30,7 @@ class BankAccount extends Component {
     }
 
     increment() {
+        // this.state.accountBalance += parseInt(this.state.incrementValue + (this.state.accountBalance * .96));
         this.setState(
             { accountBalance: this.state.accountBalance + parseInt(this.state.incrementValue) });
     }
@@ -32,6 +38,7 @@ class BankAccount extends Component {
     updateAmount(event) {
         this.setState({ incrementValue: parseInt(event.target.value) });
     }
+
 
     render() {
         return (
