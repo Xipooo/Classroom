@@ -1,7 +1,5 @@
-function isEnough(value){
-    return value >= 10;
-}
+import React from 'react';
+import ReactDOM from 'react-dom';
+import CountState from './CountState.js';
 
-const filtered = [12, 5, 8, 130, 44].filter(isEnough);
-
-console.log(filtered);
+ReactDOM.render(<CountState />, document.getElementById('root'));
