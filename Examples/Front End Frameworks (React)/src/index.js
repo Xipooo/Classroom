@@ -1,11 +1,17 @@
-const parameters = [4, 8, 2, 1, 6];
+const someNumbers = [5, 9, 21, 2];
 
-const maxWithoutSpread = 
-    Math.max(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+const newNumbers = [...someNumbers, 17];
 
-console.log(maxWithoutSpread);
+console.log(newNumbers);
 
-const maxUsingSpread = Math.max(...parameters);
+const person = {
+    name: "Jess",
+    age: 42
+}
 
-console.log(maxUsingSpread);
+const newPerson = {...person};
+console.log(newPerson);
 
+const tyler = {...person, name: "Tyler"}
+console.log(newPerson);
+console.log(tyler);
