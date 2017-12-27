@@ -11,8 +11,8 @@ const initialState = {
 const mapStateToProps = (state) => { return { count: state.count  } }
 const mapDispatchToProps = (dispatch) => {
     return {
-        onDecrement: () => dispatch({ type: 'DECREMENT' }),
-        onIncrement: () => dispatch({ type: 'INCREMENT' }),
+        onDecrement: () => dispatch({ type: 'DECREMENT', payload: { amount: 5 }}),
+        onIncrement: () => dispatch({ type: 'INCREMENT', payload: { amount: 10 }}),
         onReset: () => dispatch({ type: 'RESET' })
     }
 }
@@ -23,9 +23,9 @@ const reducer = (state = initialState, action) => {
         case 'RESET':
             return { ...state, count: 0 };
         case 'INCREMENT':
-            return { ...state, count: state.count + 1 };
+            return { ...state, count: state.count + action.payload.amount };
         case 'DECREMENT':
-            return { ...state, count: state.count - 1 };
+            return { ...state, count: state.count - action.payload.amount };
         default:
             return state;
     }
