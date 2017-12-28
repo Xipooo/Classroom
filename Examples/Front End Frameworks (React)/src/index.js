@@ -1,34 +1,28 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Home, Mine, Search } from './screens/index';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-const route = (WrappedComponent, routes) => {
-    return class extends React.Component {
-        render() {
-            const ComponentForPathname = routes[this.props.pathname];
-            return (
-                <WrappedComponent>
-                    <ComponentForPathname {...this.props} />
-                </WrappedComponent>
-            )
-        }
-    }
+const defaultReducer = (state, action) =>
+{
+    return state;
 }
-const Root = (props) =>
-    <div>
-        {props.children}
-    </div>
 
-const Router = route(Root, {
-    "/": Home,
-    "/search": Search,
-    "/mine": Mine
-});
+const store = createStore(defaultReducer);
 
-let pathname = window.location.pathname;
-
-render(<Router pathname={pathname} />, document.getElementById('root'));
-
-window.addEventListener("popstate",
-    () => pathname = window.location.pathname
+const Index = ({ store }) =>
+(
+    <Provider store={store}>
+        <Router>
+            <div>
+                <Route exact path="/" component={Home} />
+                <Route path="/search" component={Search} />
+                <Route path="/mine" component={Mine} />
+            </div>
+        </Router>
+    </Provider>
 );
+
+render(<Index store={store} />, document.getElementById('root'));
