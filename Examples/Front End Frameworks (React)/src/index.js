@@ -1,28 +1,42 @@
 import React from 'react';
-import { render } from 'react-dom';
-import { Home, Mine, Search } from './screens/index';
+import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-const defaultReducer = (state, action) =>
-{
-    return state;
+const waitTwoSecondsThenDispatch = () => {
+    store.dispatch({ type: 'STARTED' });
+    setTimeout(() => store.dispatch({ type: 'COMPLETED' }), 5000);
 }
 
-const store = createStore(defaultReducer);
+let StatusDisplay = (props) => {
+    return (
+        <div>
+            <p>{props.status}</p>
+            <button onClick={waitTwoSecondsThenDispatch}>Start Dispatch</button>
+        </div>
+    );
+}
 
-const Index = ({ store }) =>
-(
-    <Provider store={store}>
-        <Router>
-            <div>
-                <Route exact path="/" component={Home} />
-                <Route path="/search" component={Search} />
-                <Route path="/mine" component={Mine} />
-            </div>
-        </Router>
-    </Provider>
-);
+const reducer = (state = 'not started', action) => {
+    switch (action.type) {
+        case 'STARTED':
+            return 'started';
+        case 'COMPLETED':
+            return 'completed';
+        default:
+            return state;
+    }
+}
 
-render(<Index store={store} />, document.getElementById('root'));
+const store = createStore(reducer);
+store.subscribe(() => renderApp());
+
+const renderApp = () => {
+    ReactDOM.render(
+        <Provider store={store}>
+            <StatusDisplay status={store.getState()} />
+        </Provider>,
+        document.getElementById('root')
+    );
+}
+renderApp();
