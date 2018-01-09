@@ -1,0 +1,27 @@
+package com.codercamps.redmond;
+
+public class Loops {
+
+	public static void main(String[] args) {
+		// While loop
+		boolean keepLooping = true;
+		String userInput;
+		
+		while (keepLooping) {
+			userInput = StudentHelper.ReadInputString();
+
+			if (userInput.equals("quit")) {
+				keepLooping = false;
+			} else {
+				System.out.println("Echo: " + userInput);
+			}
+		}
+		
+		do {
+			System.out.println("Computer: Hi");
+			userInput = StudentHelper.ReadInputString();
+			System.out.println("You: " + userInput);
+			
+		} while(userInput.equals("Hi"));
+	}
+}

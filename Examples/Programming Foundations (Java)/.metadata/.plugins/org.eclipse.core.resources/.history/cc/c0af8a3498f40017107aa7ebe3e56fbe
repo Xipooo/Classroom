@@ -1,0 +1,31 @@
+package com.codercamps.redmond;
+
+public class CodeReusability {
+
+	public static void main(String[] args) {
+		// Arrays
+		
+		String musician1 = "John";
+		String musician2 = "George";
+		String musician3 = "Paul";
+		String musician4 = "Ringo";
+		
+		String[] musicians = {"John", "George", "Paul", "Ringo"};
+		
+		int i = 0;
+		while (i < musicians.length) {
+			System.out.println(musicians[i]);
+			i++;
+		}
+		
+		String[] groceryList = new String[4];
+		groceryList[0] = "bread";
+		groceryList[1] = "eggs";
+		groceryList[2] = "milk";
+		groceryList[3] = "tea";
+		groceryList[1] = "ham";
+		
+		System.out.pringln(groceryList[1]);
+	}
+
+}

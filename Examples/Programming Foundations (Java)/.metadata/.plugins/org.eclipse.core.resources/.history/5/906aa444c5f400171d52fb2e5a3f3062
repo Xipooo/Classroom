@@ -1,0 +1,12 @@
+package com.codercamps.redmond;
+
+public class Overview {
+
+	public static void main(String[] args) {
+		HelloWorldPrinter helloWorldPrinter = new HelloWorldPrinter();
+		
+		helloWorldPrinter.printHelloWorld("Hello world");
+		
+		new HelloWorldPrinter().printHelloWorld("Other hello world");
+	}
+}

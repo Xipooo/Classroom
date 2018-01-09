@@ -1,0 +1,7 @@
+package com.codercamps.redmond;
+
+public class HelloWorldPrinter {
+	public static void printHelloWorld(String textToPrint) {
+		System.out.println(textToPrint);
+	}
+}

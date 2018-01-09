@@ -1,0 +1,12 @@
+package com.codercamps.redmond;
+
+public class Overview {
+
+	public static void main(String[] args) {
+		runHelloWorld();
+	}
+
+	public static void runHelloWorld() {
+		System.out.println("Hello again world!");
+	}
+}

@@ -1,0 +1,18 @@
+package com.codercamps.redmond;
+
+public class Loops {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		boolean keepLooping = true;
+		while(keepLooping) {
+			String userInput = StudentHelper.ReadInputString();
+			System.out.println("Echo: " + userInput);
+			
+			keepLooping = false;
+		}
+		
+	}
+
+}
