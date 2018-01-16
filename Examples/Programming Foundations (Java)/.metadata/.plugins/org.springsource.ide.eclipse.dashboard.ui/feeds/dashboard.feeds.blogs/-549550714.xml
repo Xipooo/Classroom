@@ -5,7 +5,643 @@
   <link rel="self" href="https://spring.io/blog.atom" />
   <id>http://spring.io/blog.atom</id>
   <icon>https://spring.io/favicon.ico</icon>
-  <updated>2018-01-09T12:26:00Z</updated>
+  <updated>2018-01-16T17:00:00Z</updated>
+  <entry>
+    <title>Sneak peek at Reactor-Core 3.2 with Milestone 1</title>
+    <link rel="alternate" href="https://spring.io/blog/2018/01/16/sneak-peek-at-reactor-core-3-2-with-milestone-1" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Simon Baslé</name>
+    </author>
+    <id>tag:spring.io,2018-01-15:3137</id>
+    <updated>2018-01-16T17:00:00Z</updated>
+    <content type="html">&lt;div class="paragraph"&gt;
+&lt;p&gt;Greetings Reactive Spring community!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;While the team is still working heavily on the 3.1 line, we also wanted to give
+the community a chance to get a sneak peek at what&amp;#8217;s coming for the future 3.2
+line.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In particular, the big goodie slated for 3.2.0.RELEASE is the addition of what
+we&amp;#8217;ve been calling "error mode", "continue mode" or lately more officially
+"error strategy".&lt;/p&gt;
+&lt;/div&gt;
+&lt;h1 id="the-idea" class="sect0"&gt;&lt;a class="anchor" href="#the-idea"&gt;&lt;/a&gt;The idea&lt;/h1&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;It is simple, really: what if exceptions in user code that get executed within
+operators could be recovered from, allowing the sequence to &lt;em&gt;continue&lt;/em&gt;?&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Let&amp;#8217;s take an example, and imagine you have the following method:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;public Flux&amp;lt;Integer&amp;gt; divide100By(Flux&amp;lt;Integer&amp;gt; dividers) {
+  return dividers.map(div -&amp;gt; 100 / div);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In case the &lt;code&gt;dividers&lt;/code&gt; source emits &lt;code&gt;0&lt;/code&gt; at some point, the resulting &lt;code&gt;Flux&lt;/code&gt;
+would immediately terminate with an &lt;code&gt;onError&lt;/code&gt; signal of an &lt;code&gt;ArithmeticException&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;If the source happens to be, say, &lt;code&gt;Flux.range(0, 10)&lt;/code&gt;, there&amp;#8217;s still 9 perfectly
+valid values that could have been mapped.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;How could you make it so that such a transient exception (and only that exception)
+gets ignored, and give a chance to further valid values to get processed?&lt;/p&gt;
+&lt;/div&gt;
+&lt;h1 id="the-current-workaround" class="sect0"&gt;&lt;a class="anchor" href="#the-current-workaround"&gt;&lt;/a&gt;The current workaround&lt;/h1&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In Reactor 3.1, there&amp;#8217;s a workaround that you can apply by using &lt;code&gt;flatMap&lt;/code&gt; to
+create an inner sequence for each element, in turn applying error-recovery
+operators to these granular sequences:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;public Flux&amp;lt;Integer&amp;gt; divide100By(Flux&amp;lt;Integer&amp;gt; dividers) {
+  return dividers.flatMap(div -&amp;gt; &lt;b class="conum"&gt;(1)&lt;/b&gt;
+      Mono.just(100 / div) &lt;b class="conum"&gt;(2)&lt;/b&gt;
+          .doOnError(e -&amp;gt; { &lt;b class="conum"&gt;(3)&lt;/b&gt;
+              if (e instanceof ArithmeticException) process(e); &lt;b class="conum"&gt;(4)&lt;/b&gt;
+          })
+          .onErrorResume(ArithmeticException.class, e -&amp;gt; Mono.empty()) &lt;b class="conum"&gt;(5)&lt;/b&gt;
+      );
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="colist arabic"&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Instead of &lt;code&gt;map&lt;/code&gt; we use &lt;code&gt;flatMap&lt;/code&gt;, generating a small inner &lt;code&gt;Mono&lt;/code&gt; for each value&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;That &lt;code&gt;Mono&lt;/code&gt; is basically the old &lt;code&gt;map&lt;/code&gt; operation&amp;#8230;&amp;#8203;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;#8230;&amp;#8203;with error recovery added.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;First we make sure to process (eg. log) &lt;code&gt;ArithmeticException&lt;/code&gt; (and only these) before "recovery"&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Then we use &lt;code&gt;onErrorResume&lt;/code&gt; with a &lt;code&gt;Mono.empty()&lt;/code&gt; to effectively ignore the exception in the resulting sequence&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;This works, but it is a bit of a pain to write (although &lt;code&gt;compose&lt;/code&gt; and &lt;code&gt;transform&lt;/code&gt;
+could help mutualize that sort of code). But also, we moved from a single &lt;code&gt;map&lt;/code&gt;
+operator to a &lt;code&gt;flatMap&lt;/code&gt; with several inner operators.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;code&gt;flatMap&lt;/code&gt; has more overhead than a &lt;code&gt;map&lt;/code&gt;, due to the need to coordinate multiple
+sources. Even though things like operator fusion diminish that cost, it is still
+there.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="introducing-error-strategy"&gt;&lt;a class="anchor" href="#introducing-error-strategy"&gt;&lt;/a&gt;Introducing Error Strategy&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;The difficulty if we want to further reduce the overhead of such a processing is
+that we now have to work at the level of each operator&amp;#8217;s implementation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Each operator in a chain must somehow be made aware that exceptions should be caught
+but not propagated through &lt;code&gt;onError&lt;/code&gt;, but rather processed differently. This is
+quite a big change, and it is transverse!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Note how this conceptually sound like a &lt;code&gt;filter&lt;/code&gt;, but for errors. Like a &lt;code&gt;filter&lt;/code&gt;
+this implies that an operator that continues processing its source after one of
+its &lt;code&gt;onNext&lt;/code&gt; threw an exception should also request at least one more element
+from its source.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Even though it can be isolated to a special execution path, this is still a
+complex core implementation change to operators.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;And then there&amp;#8217;s the question of the API: it would be really tedious to put in
+place as a constructor parameter, or an additional overload in &lt;code&gt;Flux&lt;/code&gt; with an
+"error recovery" boolean&amp;#8230;&amp;#8203; Do we really need to double the number of methods in
+the &lt;code&gt;Flux&lt;/code&gt; API to support that feature?&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Fortunately not: since 3.1 we have the &lt;code&gt;Context&lt;/code&gt;, which is a good mean of
+propagating such information to every (Reactor) operator in a chain.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;So that&amp;#8217;s the road we took for the error strategy feature:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="ulist"&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;support is only added to &lt;strong&gt;specific operators&lt;/strong&gt; (&lt;code&gt;map&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;flatMap&lt;/code&gt;,
+&lt;code&gt;handle&lt;/code&gt; to name a few&amp;#8230;&amp;#8203;). These have a special javadoc tag to document that
+fact.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;the feature is activated for a given &lt;code&gt;Flux&lt;/code&gt; by putting a special key in its
+&lt;code&gt;Context&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;each supported operator has a special path in its &lt;code&gt;onNext&lt;/code&gt; implementation that
+checks for that key and, if found, will change its way of handling errors.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;the feature is exposed to the user via the &lt;code&gt;errorStrategyContinue()&lt;/code&gt; API&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;it can be a little more granular: one can filter which exceptions can be
+recovered from, and also set a custom handler for such recovered exceptions.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="admonitionblock important"&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class="icon"&gt;
+&lt;div class="title"&gt;Important&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class="content"&gt;
+One thing to keep in mind is that, since this is activated via the
+&lt;code&gt;Context&lt;/code&gt;, the feature follows the same propagation rules as &lt;code&gt;Context&lt;/code&gt;. For
+instance, it will activate on inner sequences in a &lt;code&gt;flatMap&lt;/code&gt;. If that is not
+desirable, use &lt;code&gt;errorStrategyStop()&lt;/code&gt; inside the flatMap to go back to default
+behavior (this won&amp;#8217;t escape the scope of the flatMap). &lt;strong&gt;It also propagates
+backwards, activating on the operators that precede &lt;code&gt;errorStrategyXXX&lt;/code&gt;&lt;/strong&gt;.
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h1 id="testing-it-out-with-milestone-1" class="sect0"&gt;&lt;a class="anchor" href="#testing-it-out-with-milestone-1"&gt;&lt;/a&gt;Testing it out with Milestone 1&lt;/h1&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;We just released a &lt;code&gt;3.2.0.M1&lt;/code&gt; milestone&lt;sup class="footnote"&gt;[&lt;a id="_footnoteref_1" class="footnote" href="#_footnote_1" title="View footnote."&gt;1&lt;/a&gt;]&lt;/sup&gt;
+that mainly contains the error strategy feature, and we&amp;#8217;d like you to test it &#x1f647;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="admonitionblock note"&gt;
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td class="icon"&gt;
+&lt;div class="title"&gt;Note&lt;/div&gt;
+&lt;/td&gt;
+&lt;td class="content"&gt;
+This is such a transverse change that even if you don&amp;#8217;t plan on using it, it
+would be valuable to run your tests with the artifact, to validate that if you
+don&amp;#8217;t explicitly use &lt;code&gt;errorStrategyContinue()&lt;/code&gt;, you shouldn&amp;#8217;t see any change in
+behavior (as the feature is contained within specific execution path).
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;strong&gt;In order to get the milestone&lt;/strong&gt; add the
+&lt;a href="http://repo.spring.io/milestone/io/projectreactor/reactor-core/3.2.0.M1/"&gt;&lt;code&gt;repo.spring.io/milestone&lt;/code&gt;&lt;/a&gt;
+repository to your Maven or Gradle build configuration and fetch the &lt;code&gt;reactor-core&lt;/code&gt;
+&lt;code&gt;3.2.0.M1&lt;/code&gt; artifact:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&amp;lt;dependency&amp;gt;
+  &amp;lt;groupId&amp;gt;io.projectreactor&amp;lt;/groupId&amp;gt;
+  &amp;lt;artifactId&amp;gt;reactor-core&amp;lt;/artifactId&amp;gt;
+  &amp;lt;version&amp;gt;3.2.0.M1&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;For that feature&amp;#8217;s API in particular, nothing is set in stone yet. So please let us know if you have any feedback by opening an &lt;a href="https://github.com/reactor/reactor-core/issues/new"&gt;issue on GitHub&lt;/a&gt;
+or come and discuss the feature on &lt;a href="https://gitter.im/reactor/reactor"&gt;Gitter&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;strong&gt;In the meantime, happy coding!&lt;/strong&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id="footnotes"&gt;
+&lt;hr&gt;
+&lt;div class="footnote" id="_footnote_1"&gt;
+&lt;a href="#_footnoteref_1"&gt;1&lt;/a&gt;. PS: This milestone was released early, while 3.1.3.RELEASE was still under development, so please note that it doesn&amp;#8217;t contain all the fixes in 3.1.3 and subsequent 3.1.x releases.
+&lt;/div&gt;
+&lt;/div&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Session 2.0.0 Released</title>
+    <link rel="alternate" href="https://spring.io/blog/2018/01/16/spring-session-2-0-0-released" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Rob Winch</name>
+    </author>
+    <id>tag:spring.io,2018-01-16:3138</id>
+    <updated>2018-01-16T14:26:02Z</updated>
+    <content type="html">&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;em&gt;This post was authored by &lt;a href="https://github.com/vpavic"&gt;Vedran Pavi?&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;On behalf of the community I&amp;#8217;m pleased to announce the release of &lt;a href="https://docs.spring.io/spring-session/docs/2.0.0.RELEASE/reference/html5/"&gt;Spring Session 2.0.0.RELEASE&lt;/a&gt;. This release evolved through &lt;a href="https://github.com/spring-projects/spring-session/milestone/17?closed=1"&gt;2.0.0.M1&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/milestone/22?closed=1"&gt;2.0.0.M2&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/milestone/23?closed=1"&gt;2.0.0.M3&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/milestone/24?closed=1"&gt;2.0.0.M4&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/milestone/25?closed=1"&gt;2.0.0.M5&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/milestone/26?closed=1"&gt;2.0.0.RC1&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/milestone/27?closed=1"&gt;2.0.0.RC2&lt;/a&gt; and &lt;a href="https://github.com/spring-projects/spring-session/milestone/30?closed=1"&gt;2.0.0.RELEASE&lt;/a&gt;, closing over 130 issues and pull requests in total.&lt;/p&gt;
+&lt;/div&gt;
+&lt;h1 id="what-s-new-in-spring-session-2-0" class="sect0"&gt;&lt;a class="anchor" href="#what-s-new-in-spring-session-2-0"&gt;&lt;/a&gt;What’s New in Spring Session 2.0&lt;/h1&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;You can find highlights of what’s new in the &lt;a href="https://docs.spring.io/spring-session/docs/current/reference/html5/#what-s-new-in-2-0"&gt;What’s New 2.0&lt;/a&gt; section of the reference. For details refer to the changelog links above.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="requirements"&gt;&lt;a class="anchor" href="#requirements"&gt;&lt;/a&gt;Requirements&lt;/h3&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;This release moves to Java 8 and Spring Framework 5.0 as baseline requirements. Entire codebase is based on Java 8 source code level now.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="spring-webflux-support"&gt;&lt;a class="anchor" href="#spring-webflux-support"&gt;&lt;/a&gt;Spring WebFlux Support&lt;/h3&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Introduction of reactive programming model in Spring Framework 5.0 has been one of the biggest stories in 2017, and we&amp;#8217;re happy to bring the support for managing Spring WebFlux’s &lt;code&gt;WebSession&lt;/code&gt; with Redis &lt;code&gt;ReactiveSessionRepository&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In a familiar Spring Session fashion, enabling Redis backed &lt;code&gt;WebSession&lt;/code&gt; support is as simple as the following code snippet:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@EnableRedisWebSession
+public class WebSessionConfig {
+
+    @Bean
+    public LettuceConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory();
+    }
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Spring Boot users will be happy to learn that auto-configuration support for reactive Spring Session is already available since the &lt;a href="https://spring.io/blog/2017/11/06/spring-boot-2-0-0-m6-available-now"&gt;&lt;code&gt;2.0.0.M6&lt;/code&gt; milestone release&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="spring-session-modules"&gt;&lt;a class="anchor" href="#spring-session-modules"&gt;&lt;/a&gt;Spring Session Modules&lt;/h3&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;The new release bring some major changes to project&amp;#8217;s modules, as we have split Spring Session into modules based upon the repository implementation. You will find:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-core&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-data-redis&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-hazelcast&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-jdbc&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;As a part of this change, we have removed some of the Spring Session implementations from the main repository. We now have sub projects for &lt;a href="https://github.com/spring-projects/spring-session-data-geode"&gt;Spring Session Data Geode (GemFire)&lt;/a&gt; and &lt;a href="https://github.com/spring-projects/spring-session-data-mongodb"&gt;Spring Session Data MongoDB&lt;/a&gt;. You will find:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-data-gemfire&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-data-geode&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.session&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-session-data-mongodb&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;2.0.0.RELEASE&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;The goal is to allow the core Spring Session team to focus on delivering new features rather than needing to know the ins and outs of every data store. This will allow development of other modules to be done without the overhead of reviews from the core Spring Session team.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h1 id="contributions" class="sect0"&gt;&lt;a class="anchor" href="#contributions"&gt;&lt;/a&gt;Contributions&lt;/h1&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Without the community we couldn’t be the successful project we are today. I’d like to thank everyone that created issues &amp;amp; provided feedback.&lt;/p&gt;
+&lt;/div&gt;
+&lt;h1 id="feedback-please" class="sect0"&gt;&lt;a class="anchor" href="#feedback-please"&gt;&lt;/a&gt;Feedback Please&lt;/h1&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;If you have feedback on this release, I encourage you to reach out via &lt;a href="https://stackoverflow.com/questions/tagged/spring-session"&gt;StackOverflow&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-session/issues"&gt;GitHub Issues&lt;/a&gt;, or via the comments section. You can also ping Rob &lt;a href="https://twitter.com/rob_winch"&gt;@rob_winch&lt;/a&gt;, Joe &lt;a href="https://twitter.com/joe_grandja"&gt;@joe_grandja&lt;/a&gt;, or me &lt;a href="https://twitter.com/vedran_pavic"&gt;@vedran_pavic&lt;/a&gt; on Twitter.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Of course the best feedback comes in the form of &lt;a href="https://github.com/spring-projects/spring-session/blob/2.0.0.RELEASE/CONTRIBUTING.adoc"&gt;contributions&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;a href="https://projects.spring.io/spring-session/"&gt;Project Site&lt;/a&gt; | &lt;a href="https://docs.spring.io/spring-session/docs/2.0.0.RELEASE/reference/html5/"&gt;Reference&lt;/a&gt; | &lt;a href="https://stackoverflow.com/questions/tagged/spring-session"&gt;Help&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</content>
+  </entry>
+  <entry>
+    <title>Building richer hypermedia with Spring HATEOAS</title>
+    <link rel="alternate" href="https://spring.io/blog/2018/01/12/building-richer-hypermedia-with-spring-hateoas" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Greg Turnquist</name>
+    </author>
+    <id>tag:spring.io,2017-12-05:3124</id>
+    <updated>2018-01-12T17:40:00Z</updated>
+    <content type="html">&lt;div class="paragraph"&gt;
+&lt;p&gt;Greetings Spring community,&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;As &lt;a href="https://twitter.com/gregturn/status/935853433931943936"&gt;previously announced&lt;/a&gt;, we have released a new &lt;strong&gt;Affordances API&lt;/strong&gt; in 1.0.0.BUILD-SNAPSHOT. In this blog post, we&amp;#8217;ll take a peek at exactly what this feature lets you do.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="history-of-affordances"&gt;&lt;a class="anchor" href="#history-of-affordances"&gt;&lt;/a&gt;History of Affordances&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;For starters, what is an &lt;strong&gt;affordance&lt;/strong&gt;? Doing a little archeology, Mike Admundsen, a REST advocate, has &lt;a href="http://amundsen.com/blog/archives/1109"&gt;an article detailing the word&amp;#8217;s origins&lt;/a&gt;, going back at least to 1986:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="verseblock"&gt;
+&lt;pre class="content"&gt;The affordances of the environment are what it offers &amp;#8230;&amp;#8203; what it provides or furnishes, either for good or ill. The verb 'to afford' is found in the dictionary, but the noun 'affordance' is not. I have made it up (page 126).&lt;/pre&gt;
+&lt;div class="attribution"&gt;
+&amp;#8212; The Ecological Approach to Visual Perception (Gibson)
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;It then appeared in a psychology paper in 1988:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="verseblock"&gt;
+&lt;pre class="content"&gt;&amp;#8230;&amp;#8203;the term affordance refers to the perceived and actual properties of the thing, primarily those fundamental properties that determine just how the thing could possibly be used. (pg 9)&lt;/pre&gt;
+&lt;div class="attribution"&gt;
+&amp;#8212; The Design|Psychology of Everyday Things (Norman)
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Finally, it can be found in none other than one of Roy Fielding&amp;#8217;s presentations on hypermedia in 2008:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="verseblock"&gt;
+&lt;pre class="content"&gt;When I say Hypertext, I mean the simultaneous presentation of information and controls such that the information becomes the affordance through which the user obtains choices and selects actions (slide #50).&lt;/pre&gt;
+&lt;div class="attribution"&gt;
+&amp;#8212; Slide presention on REST (Fielding)
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In all these situations, "affordance" refers to the available actions provided by the surrounding environment. In the context of REST, these are actions detailed by the hypermedia.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In the past, when people moved away from SOAP and its action-based tactics, they have struggled to document their APIs, many unaware that Roy Fielding built hypermedia into REST for this very purpose. By including data along with the controls to not just find related data, but to also use the data is key.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;With a HAL document, clients are provided very simple affordances. The links are shown but nothing else about them. What you can do with the links and what it takes to interact with them is not detailed.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="affordances-and-spring-hateoas"&gt;&lt;a class="anchor" href="#affordances-and-spring-hateoas"&gt;&lt;/a&gt;Affordances and Spring HATEOAS&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;You can start exploring this new API by defining the following domain object:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@Data
+@Entity
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+class Employee {
+
+	@Id @GeneratedValue
+	private Long id;
+	private String firstName;
+	private String lastName;
+	private String role;
+
+	/**
+	 * Useful constructor when id is not yet known.
+	 */
+	Employee(String firstName, String lastName, String role) {
+
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.role = role;
+	}
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;This domain object gives us a pretty simple POJO to interact with. To persist such objects, you need to define a corresponding Spring Data JPA repository:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;interface EmployeeRepository extends CrudRepository&amp;lt;Employee, Long&amp;gt; {
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;This repository will supply the simplest CRUD operations.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;With these components, the table is set. You can now start defining REST operations and their corresponding affordances. First of all, create a Spring MVC REST controller as shown below:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@RestController
+class EmployeeController {
+
+	private final EmployeeRepository repository;
+
+	EmployeeController(EmployeeRepository repository) {
+		this.repository = repository;
+	}
+
+	...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;This control contains some key traits:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="ulist"&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@RestController&lt;/code&gt; indicates that all the mappings will write their results directly into the response body, not render view templates.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;EmployeeRepository&lt;/code&gt; is injected via constructor injection, ensuring a consistent state.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Spring HATEOAS already has the means to build links out of Spring MVC endpoints. What this API provides is the ability to connect one endpoint with another. For example, you can link the &lt;strong&gt;GET&lt;/strong&gt; endpoint for a single item resource (&lt;code&gt;/employees/{id}&lt;/code&gt;) to the &lt;strong&gt;PUT&lt;/strong&gt; mapping used for updating that employee (&lt;code&gt;/employees/{id}&lt;/code&gt;). The following code shows just such a relationship:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@RestController
+class EmployeeController {
+
+	...
+
+	@GetMapping("/employees/{id}")
+	ResponseEntity&amp;lt;Resource&amp;lt;Employee&amp;gt;&amp;gt; findOne(@PathVariable long id) {
+
+		return repository.findById(id)
+			.map(employee -&amp;gt; new Resource&amp;lt;&amp;gt;(employee, getSingleItemLinks(employee.getId())))
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
+	}
+
+	@PutMapping("/employees/{id}")
+	ResponseEntity&amp;lt;?&amp;gt; updateEmployee(@RequestBody Employee employee, @PathVariable long id) {
+
+		employee.setId(id);
+		Employee updatedEmployee = repository.save(employee);
+
+		Resource&amp;lt;Employee&amp;gt; employeeResource = new Resource&amp;lt;&amp;gt;(updatedEmployee, getSingleItemLinks(updatedEmployee.getId()));
+
+		try {
+			return ResponseEntity
+				.created(new URI(employeeResource.getRequiredLink(Link.REL_SELF).getHref()))
+				.body(employeeResource);
+		} catch (URISyntaxException e) {
+			return ResponseEntity.badRequest().body("Unable to update " + employee);
+		}
+	}
+
+	...
+
+	private List&amp;lt;Link&amp;gt; getSingleItemLinks(long id) {
+
+		return Arrays.asList(linkTo(methodOn(EmployeeController.class).findOne(id)).withSelfRel()
+				.andAffordance(afford(methodOn(EmployeeController.class).updateEmployee(null, id)))
+				.andAffordance(afford(methodOn(EmployeeController.class).deleteEmployee(id))),
+			linkTo(methodOn(EmployeeController.class).findAll()).withRel("employees"));
+	}
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In the middle of this code are several usages of &lt;code&gt;.andAffordance(afford(methodOn(&amp;#8230;&amp;#8203;)))&lt;/code&gt;. This is where a given link (the &lt;strong&gt;self&lt;/strong&gt; link for &lt;code&gt;findOne&lt;/code&gt;) is connected to a related link on the same URI (&lt;code&gt;updateEmployee&lt;/code&gt;).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;With this version, Spring HATEOAS can now glean information about the Spring MVC endpoint in a mediatype-neutral format, allowing you to serve it up to users. Which begs the question&amp;#8212;&amp;#8203;how do you display this relationship of links to users?&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="introducing-hal-forms"&gt;&lt;a class="anchor" href="#introducing-hal-forms"&gt;&lt;/a&gt;Introducing HAL-FORMS&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;HAL itself doesn&amp;#8217;t include any format to display these affordances. If you have multiple links at the same URI in a given resource, HAL will simply show one link. Thankfully, the popularity of HAL in the world of REST has caused derivative specs to start being developed.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;a href="https://rwcbook.github.io/hal-forms/"&gt;HAL-FORMS&lt;/a&gt; is a HAL extension that looks like any other HAL document with one additional field: &lt;strong&gt;_templates&lt;/strong&gt;. This field allows displaying methods as well as properties.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Assuming the single item &lt;code&gt;Resource&amp;lt;Employee&amp;gt;&lt;/code&gt; code up above connected a Spring MVC &lt;code&gt;@GetMapping&lt;/code&gt; endpoint to a &lt;code&gt;@PutMapping&lt;/code&gt; endpoint (and you had some employee data loaded into the database), Spring HATEOAS will generate HAL-FORMS hypermedia like this:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;{
+  "id" : 1,
+  "firstName" : "Frodo",
+  "lastName" : "Baggins",
+  "role" : "ring bearer",
+  "_links" : {
+    "self" : {
+      "href" : "http://localhost:8080/employees/1"
+    },
+    "employees" : {
+      "href" : "http://localhost:8080/employees"
+    }
+  },
+  "_templates" : {
+    "default" : {
+      "title" : null,
+      "method" : "put",
+      "contentType" : "",
+      "properties" : [ {
+        "name" : "firstName",
+        "required" : true
+      }, {
+        "name" : "id",
+        "required" : true
+      }, {
+        "name" : "lastName",
+        "required" : true
+      }, {
+        "name" : "role",
+        "required" : true
+      } ]
+    },
+    "deleteEmployee" : {
+      "title" : null,
+      "method" : "delete",
+      "contentType" : "",
+      "properties" : [ ]
+    }
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;When you do a &lt;code&gt;GET /employees/1&lt;/code&gt;, this HAL-FORMS document shows both data &lt;em&gt;and&lt;/em&gt; links. But more importantly, it gives you a template for editing the resource (the &lt;code&gt;default&lt;/code&gt; template). Since HAL-FORMS presumes you are working against the &lt;strong&gt;self&lt;/strong&gt; link, you could do a &lt;code&gt;PUT /employees/1&lt;/code&gt; to make an update. And the properties it would be looking for include &lt;code&gt;firstName&lt;/code&gt;, &lt;code&gt;id&lt;/code&gt;, &lt;code&gt;lastName&lt;/code&gt;, and &lt;code&gt;role&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;These hypermedia controls also indicate that you can issue a &lt;code&gt;DELETE /employees/1&lt;/code&gt; request (the &lt;code&gt;deleteEmployee&lt;/code&gt; template). No properties involved.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;At first glance, this may not appear very impressive since you could already read that in the data shown at the top. But this format grants you the ability to write a little frontend JavaScript, and transform that template into:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-html" data-lang="html"&gt;&amp;lt;form method="put" action="http://localhost:8080/employees/1"&amp;gt;
+	&amp;lt;input type="text" id="firstName" name="firstName"/&amp;gt;
+	&amp;lt;input type="text" id="id" name="id" /&amp;gt;
+	&amp;lt;input type="text" id="lastName" name="lastName" /&amp;gt;
+	&amp;lt;input type="text" id="role" name="role" /&amp;gt;
+	&amp;lt;input type="submit" value="Submit" /&amp;gt;
+&amp;lt;/form&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;By mixing the &lt;strong&gt;self&lt;/strong&gt; link with the listed properties, you can create a real HTML form, purely driven by the hypermedia. This completes the synergy of REST by letting the server push domain-specific details straight to the user of the site. There is no need to code this bit of domain knowledge into the client, hence reducing coupling. Instead, just convert the hypermedia&amp;#8217;s template &lt;em&gt;into&lt;/em&gt; a form. Then, as domain updates occur on the server side, the client can adapt with little friction.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;In short, HAL-FORMS is designed to show other actions available against the same URI.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Reading all this, did you find yourself asking the question, "why not just push an HTML form out instead of some JSON?" That is a fair question.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;The Affordances API is completely neutral allowing the Spring team to work on other mediatypes apart from HAL-FORMS. Some that are already under development include &lt;a href="http://rawgit.com/uber-hypermedia/specification/master/uber-hypermedia.html#rfc4627"&gt;Uber&lt;/a&gt;, &lt;a href="https://github.com/kevinswiber/siren"&gt;SIREN&lt;/a&gt;, &lt;a href="http://amundsen.com/media-types/collection/"&gt;Collection+JSON&lt;/a&gt;, and a form of XHTML.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="more-examples"&gt;&lt;a class="anchor" href="#more-examples"&gt;&lt;/a&gt;More examples&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;The code and details found in this article can be found at &lt;a href="https://github.com/spring-projects/spring-hateoas-examples" class="bare"&gt;https://github.com/spring-projects/spring-hateoas-examples&lt;/a&gt;, particularly under &lt;strong&gt;Affordances&lt;/strong&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;We look forward to feedback from the community on the API.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Cheers!&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</content>
+  </entry>
   <entry>
     <title>This Week in Spring - January 9th, 2017</title>
     <link rel="alternate" href="https://spring.io/blog/2018/01/09/this-week-in-spring-january-9th-2017" />
@@ -869,183 +1505,5 @@ public FlatFileItemReader&amp;lt;Foo&amp;gt; reader(Resource resource) {&#xD;
 &lt;div class="paragraph"&gt;
 &lt;p&gt;Please try it out, share your feedback, and consider contributing to the project!&lt;/p&gt;
 &lt;/div&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring for Apache Kafka 2.1.0.RELEASE (and 1.3.2, 2.0.2) Available</title>
-    <link rel="alternate" href="https://spring.io/blog/2017/12/01/spring-for-apache-kafka-2-1-0-release-and-1-3-2-2-0-2-available" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Gary Russell</name>
-    </author>
-    <id>tag:spring.io,2017-11-30:3119</id>
-    <updated>2017-12-01T14:21:28Z</updated>
-    <content type="html">&lt;div class="paragraph"&gt;
-&lt;p&gt;I am pleased to announce the availability of Spring for Apache Kafka 2.1.0.RELEASE.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;In addition, maintenance releases 1.3.2.RELEASE and 2.0.2.RELEASE are available, containing important bug fixes. See also below for information about &lt;code&gt;spring-integration-kafka&lt;/code&gt; 3.0.0.RELEASE.
-It is recommended that all users upgrade.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;The main purpose of the 2.1 release is to upgrade the &lt;code&gt;kafka-clients&lt;/code&gt; library to 1.0.0, but we have included a few improvements:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="ulist"&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Sometimes, when a message can&amp;#8217;t be processed, you may wish to stop the container so the condition can be corrected and the message re-delivered.
-The framework now provides the &lt;code&gt;ContainerStoppingErrorHandler&lt;/code&gt; for record listeners and &lt;code&gt;ContainerStoppingBatchErrorHandler&lt;/code&gt; for batch listeners.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;KafkaAdmin&lt;/code&gt; now supports increasing partitions when a &lt;code&gt;NewTopic&lt;/code&gt; bean is detected with a larger number of partitions than currently exist on the topic.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;StringJsonMessageConverter&lt;/code&gt; and &lt;code&gt;JsonSerializer/JsonDeserializer&lt;/code&gt; now pass and consume type information in &lt;code&gt;Headers&lt;/code&gt;. This allows multiple types to be easily sent/received on the same topic:&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class="listingblock"&gt;
-&lt;div class="content"&gt;
-&lt;pre class="prettyprint highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@SpringBootApplication
-public class Kafka21Application {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Kafka21Application.class, args)
-            .close();
-    }
-
-    @Bean
-    public ApplicationRunner runner(KafkaTemplate&amp;lt;Object, Object&amp;gt; template) {
-        return args -&amp;gt; {
-            template.send(MessageBuilder.withPayload(42)
-                    .setHeader(KafkaHeaders.TOPIC, "blog")
-                    .build());
-            template.send(MessageBuilder.withPayload("43")
-                    .setHeader(KafkaHeaders.TOPIC, "blog")
-                    .build());
-            Thread.sleep(5_000);
-        };
-    }
-
-    @Bean
-    public StringJsonMessageConverter converter() {
-        return new StringJsonMessageConverter();
-    }
-
-    @Component
-    @KafkaListener(id = "multi", topics = "blog")
-    public static class Listener {
-
-        @KafkaHandler
-        public void intListener(Integer in) {
-            System.out.println("Got an int: " + in);
-        }
-
-        @KafkaHandler
-        public void stringListener(String in) {
-            System.out.println("Got a string: " + in);
-        }
-
-    }
-
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="listingblock"&gt;
-&lt;div class="content"&gt;
-&lt;pre class="prettyprint highlight"&gt;&lt;code&gt;Got an int: 42
-Got a string: 43&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;The first time you run this app, you may need this property&amp;#8230;&amp;#8203;&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="listingblock"&gt;
-&lt;div class="content"&gt;
-&lt;pre class="prettyprint highlight"&gt;&lt;code&gt;spring.kafka.consumer.auto-offset-reset=earliest&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;&amp;#8230;&amp;#8203;in case the template sends the messages before the containers completely start.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;In addition, the &lt;code&gt;JsonSerializer&lt;/code&gt; and &lt;code&gt;JsonDeserializer&lt;/code&gt; can be configured using kafka properties for the producer/consumer.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="admonitionblock important"&gt;
-&lt;table&gt;
-&lt;tr&gt;
-&lt;td class="icon"&gt;
-&lt;div class="title"&gt;Important&lt;/div&gt;
-&lt;/td&gt;
-&lt;td class="content"&gt;
-In accordance with &lt;a href="https://pivotal.io/security/cve-2017-4995"&gt;CVE-2017-4995&lt;/a&gt;, only classes in &lt;code&gt;java.util&lt;/code&gt; and &lt;code&gt;java.lang&lt;/code&gt; will be deserialized by default; to deserialize (trust) other packages, use the &lt;code&gt;addTrustedPackages&lt;/code&gt; method on the deserializer or in a customized &lt;code&gt;DefaultJackson2TypeMapper&lt;/code&gt; for the message converter. For the &lt;code&gt;JsonDeserializer&lt;/code&gt;, the packages can be provided in the Kafka consumer config in property &lt;code&gt;JsonDeserializer.TRUSTED_PACKAGES&lt;/code&gt;.
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;See the &lt;a href="https://docs.spring.io/spring-kafka/reference/html/whats-new-part.html"&gt;What&amp;#8217;s New&lt;/a&gt; for complete information.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;Finally, &lt;code&gt;spring-integration-kafka&lt;/code&gt; 3.0.0.RELEASE is also available; it is based on Spring for Apache Kafka 2.1, Spring Integration 5.0, and Spring Framework 5.0; it requires Java 8 and has the following new feature:&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="ulist"&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Mapping of &lt;code&gt;spring-messaging&lt;/code&gt; headers to/from Kafka &lt;code&gt;Headers&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;See the &lt;a href="http://projects.spring.io/spring-kafka/"&gt;Project Page&lt;/a&gt; for a complete matrix of &lt;code&gt;spring-kafka&lt;/code&gt;, &lt;code&gt;spring-integration-kafka&lt;/code&gt; and &lt;code&gt;kafka-clients&lt;/code&gt; version compatibility.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="paragraph"&gt;
-&lt;p&gt;&lt;a href="http://projects.spring.io/spring-kafka/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-kafka/issues"&gt;Issues&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-kafka/blob/master/CONTRIBUTING.adoc"&gt;Contributing&lt;/a&gt; | &lt;a href="http://stackoverflow.com/questions/tagged/spring-kafka"&gt;Help&lt;/a&gt; | &lt;a href="https://gitter.im/spring-projects/spring-kafka"&gt;Chat&lt;/a&gt;&lt;/p&gt;
-&lt;/div&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Boot 2.0.0 M7 available now</title>
-    <link rel="alternate" href="https://spring.io/blog/2017/11/30/spring-boot-2-0-0-m7-available-now" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Phil Webb</name>
-    </author>
-    <id>tag:spring.io,2017-11-30:3118</id>
-    <updated>2017-11-30T07:49:14Z</updated>
-    <content type="html">&lt;p&gt;On behalf of the team, it is my pleasure to announce that Spring Boot 2.0.0.M7 has been released and is now available from &lt;a href="http://repo.spring.io/milestone/"&gt;our milestone repository&lt;/a&gt;. This release closes &lt;a href="https://github.com/spring-projects/spring-boot/milestone/56?closed=1"&gt;165 issues and pull requests&lt;/a&gt; and continues our progress towards 2.0 GA. Thanks to everyone that has contributed!&lt;/p&gt;
-&lt;p&gt;This release refines a number of items from previous milestones, and provides a number of notable new features:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Condition evaluation report deltas on Devtools triggered restart&lt;/li&gt;
-  &lt;li&gt;A new scheduled tasks actuator endpoint&lt;/li&gt;
-  &lt;li&gt;Support for Duration types in configuration properties (e.g. &lt;code&gt;5ms&lt;/code&gt;, &lt;code&gt;1s&lt;/code&gt;, &lt;code&gt;10m&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;Reactive Couchbase support&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;If you are upgrading from the previous milestone please be aware that actuator endpoints are now under &lt;code&gt;/actuator&lt;/code&gt; rather than &lt;code&gt;/application&lt;/code&gt;. You will also need to set &lt;code&gt;management.endpoints.web.expose=*&lt;/code&gt; if you want to access all enabled endpoints over HTTP.&lt;/p&gt;
-&lt;p&gt;For a complete list of changes, and upgrade instructions, see the &lt;a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0.0-M7-Release-Notes"&gt;Spring Boot 2.0.0.M7 Release Notes&lt;/a&gt; on the WIKI. &lt;/p&gt;
-&lt;p&gt;To get started with Spring Boot 2.0.0 M7 and discover those new feature, you can easily bootstrap a new project on &lt;a href="https://start.spring.io"&gt;start.spring.io&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://projects.spring.io/spring-boot/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-boot"&gt;GitHub&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-boot/issues"&gt;Issues&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-boot/docs/2.0.0.M7/reference/htmlsingle"&gt;Documentation&lt;/a&gt; | &lt;a href="http://stackoverflow.com/questions/tagged/spring-boot"&gt;Stack Overflow&lt;/a&gt; | &lt;a href="https://gitter.im/spring-projects/spring-boot"&gt;Gitter&lt;/a&gt;&lt;/p&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring IO Platform Brussels-SR6</title>
-    <link rel="alternate" href="https://spring.io/blog/2017/11/29/spring-io-platform-brussels-sr6" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>Andy Wilkinson</name>
-    </author>
-    <id>tag:spring.io,2017-11-29:3117</id>
-    <updated>2017-11-29T20:46:55Z</updated>
-    <content type="html">&lt;p&gt;I am pleased to announce that &lt;a href="http://platform.spring.io/platform"&gt;Spring IO Platform&lt;/a&gt; Brussels-SR6 is now available from both &lt;a href="https://repo.spring.io/release"&gt;repo.spring.io&lt;/a&gt; and Maven Central. &lt;/p&gt;
-&lt;p&gt;This maintenance release upgrades the versions of a number of the projects in the Platform:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;AspectJ 1.8.13&lt;/li&gt;
-  &lt;li&gt;Spring Boot 1.5.9&lt;/li&gt;
-  &lt;li&gt;Spring Cloud Connectors 1.2.5&lt;/li&gt;
-  &lt;li&gt;Spring Data Ingalls-SR9&lt;/li&gt;
-  &lt;li&gt;Spring Framework 4.3.13&lt;/li&gt;
-  &lt;li&gt;Spring Kafka 1.1.7&lt;/li&gt;
-  &lt;li&gt;Spring LDAP 2.3.2&lt;/li&gt;
-  &lt;li&gt;Spring Web Services 2.4.2&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The versions of a number of third-party dependencies have also been updated.&lt;/p&gt;
-&lt;p&gt;&lt;a href="http://platform.spring.io/platform"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-io/platform"&gt;GitHub&lt;/a&gt; | &lt;a href="https://github.com/spring-io/platform/issues"&gt;Issues&lt;/a&gt; | &lt;a href="http://docs.spring.io/platform/docs/Brussels-SR6/reference/htmlsingle"&gt;Documentation&lt;/a&gt;&lt;/p&gt;</content>
   </entry>
 </feed>
