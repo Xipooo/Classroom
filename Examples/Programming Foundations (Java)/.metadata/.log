@@ -441,7 +441,11 @@ This warning can be switched off on the Team > Git > Confirmations and Warnings 
 
 !ENTRY org.eclipse.jface.text 2 0 2018-01-08 14:16:43.182
 !MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'
+<<<<<<< HEAD
 !SESSION 2018-01-09 10:42:49.871 -----------------------------------------------
+=======
+!SESSION 2018-01-10 08:58:55.020 -----------------------------------------------
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 eclipse.buildId=3.9.2.201712210947-RELEASE-e47
 java.version=1.8.0_151
 java.vendor=Oracle Corporation
@@ -449,6 +453,7 @@ BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
 Framework arguments:  -product org.springsource.sts.ide
 Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springsource.sts.ide
 
+<<<<<<< HEAD
 !ENTRY org.eclipse.ui 2 0 2018-01-09 10:44:05.677
 !MESSAGE Warnings while parsing the images from the 'org.eclipse.ui.commandImages' extension point.
 !SUBENTRY 1 org.eclipse.ui 2 0 2018-01-09 10:44:05.678
@@ -457,12 +462,26 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springsou
 !ENTRY org.eclipse.jface 2 0 2018-01-09 10:44:10.814
 !MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
 !SUBENTRY 1 org.eclipse.jface 2 0 2018-01-09 10:44:10.814
+=======
+!ENTRY org.eclipse.ui 2 0 2018-01-10 09:00:56.053
+!MESSAGE Warnings while parsing the images from the 'org.eclipse.ui.commandImages' extension point.
+!SUBENTRY 1 org.eclipse.ui 2 0 2018-01-10 09:00:56.053
+!MESSAGE Cannot bind to an undefined command: plug-in='org.eclipse.lsp4e', id='org.eclipse.lsp4e.togglehighlight'
+
+!ENTRY org.eclipse.jface 2 0 2018-01-10 09:01:10.492
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2018-01-10 09:01:10.492
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 !MESSAGE A conflict occurred for CTRL+SHIFT+T:
 Binding(CTRL+SHIFT+T,
 	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
 		Open a type in a Java editor,
 		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+<<<<<<< HEAD
 		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@738153d8,
+=======
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@5d514db,
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 		,,true),null),
 	org.eclipse.ui.defaultAcceleratorConfiguration,
 	org.eclipse.ui.contexts.window,,,system)
@@ -470,19 +489,33 @@ Binding(CTRL+SHIFT+T,
 	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
 		,
 		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+<<<<<<< HEAD
 		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@1a3272e0,
+=======
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@3e8b1ddd,
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 		,,true),null),
 	org.eclipse.ui.defaultAcceleratorConfiguration,
 	org.eclipse.ui.contexts.window,,,system)
 
+<<<<<<< HEAD
 !ENTRY org.eclipse.egit.ui 2 0 2018-01-09 10:44:31.692
 !MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
 user global configuration and to define the default location to store repositories: 'C:\Users\SBishop'. If this is
+=======
+!ENTRY org.eclipse.egit.ui 2 0 2018-01-10 09:01:53.549
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\ringe'. If this is
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
 EGit might behave differently since they see different configuration options.
 This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
 
+<<<<<<< HEAD
 !ENTRY org.eclipse.e4.ui.workbench 4 0 2018-01-09 10:46:12.531
+=======
+!ENTRY org.eclipse.e4.ui.workbench 4 0 2018-01-10 09:01:57.538
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 !MESSAGE Error setting focus to : org.eclipse.e4.ui.model.application.ui.basic.impl.PartImpl Maths.java
 !STACK 0
 org.eclipse.swt.SWTException: Widget is disposed
@@ -568,7 +601,11 @@ org.eclipse.swt.SWTException: Widget is disposed
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:590)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1499)
 
+<<<<<<< HEAD
 !ENTRY org.eclipse.core.resources 4 4 2018-01-09 10:46:40.124
+=======
+!ENTRY org.eclipse.core.resources 4 4 2018-01-10 09:02:29.512
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 !MESSAGE Exception loading preferences from: /Loops/.settings/org.eclipse.jdt.core.prefs.
 !STACK 1
 org.eclipse.core.runtime.CoreException: File not found: C:\Projects\Classroom\Examples\Programming Foundations (Java)\Loops\.settings\org.eclipse.jdt.core.prefs.
@@ -651,7 +688,11 @@ Caused by: java.io.FileNotFoundException: C:\Projects\Classroom\Examples\Program
 	at java.io.FileInputStream.<init>(Unknown Source)
 	at org.eclipse.core.internal.filesystem.local.LocalFile.openInputStream(LocalFile.java:401)
 	... 71 more
+<<<<<<< HEAD
 !SUBENTRY 1 org.eclipse.core.filesystem 4 269 2018-01-09 10:46:40.127
+=======
+!SUBENTRY 1 org.eclipse.core.filesystem 4 269 2018-01-10 09:02:29.514
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 !MESSAGE File not found: C:\Projects\Classroom\Examples\Programming Foundations (Java)\Loops\.settings\org.eclipse.jdt.core.prefs.
 !STACK 0
 java.io.FileNotFoundException: C:\Projects\Classroom\Examples\Programming Foundations (Java)\Loops\.settings\org.eclipse.jdt.core.prefs (The system cannot find the path specified)
@@ -731,7 +772,11 @@ java.io.FileNotFoundException: C:\Projects\Classroom\Examples\Programming Founda
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:590)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1499)
 
+<<<<<<< HEAD
 !ENTRY org.eclipse.equinox.preferences 4 4 2018-01-09 10:46:40.135
+=======
+!ENTRY org.eclipse.equinox.preferences 4 4 2018-01-10 09:02:29.817
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
 !MESSAGE Exception loading preferences from: C:/Projects/Classroom/Examples/Programming Foundations (Java)/Loops/.settings/org.eclipse.jdt.core.prefs.
 !STACK 0
 org.osgi.service.prefs.BackingStoreException: Exception loading preferences from: /Loops/.settings/org.eclipse.jdt.core.prefs.
@@ -804,6 +849,7 @@ org.osgi.service.prefs.BackingStoreException: Exception loading preferences from
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:653)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:590)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1499)
+<<<<<<< HEAD
 !SESSION 2018-01-09 12:31:17.091 -----------------------------------------------
 eclipse.buildId=3.9.2.201712210947-RELEASE-e47
 java.version=1.8.0_151
@@ -1028,3 +1074,86 @@ org.eclipse.swt.SWTException: Widget is disposed
 
 !ENTRY org.eclipse.jface.text 2 0 2018-01-09 12:34:34.563
 !MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'
+=======
+
+!ENTRY org.eclipse.jface.text 2 0 2018-01-10 13:37:41.631
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.number'
+
+!ENTRY org.eclipse.jface.text 2 0 2018-01-10 13:37:41.658
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'
+
+!ENTRY org.eclipse.jface.text 2 0 2018-01-10 13:39:03.999
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.number'
+
+!ENTRY org.eclipse.jface.text 2 0 2018-01-10 13:39:04.022
+!MESSAGE Duplicate template id: 'org.eclipse.wst.xslt.templates.xpath.round'
+
+!ENTRY org.eclipse.recommenders.models.rcp 1 11 2018-01-10 13:39:06.154
+!MESSAGE The model index service was accessed either before it started or after it finished running.
+!STACK 0
+org.eclipse.recommenders.utils.Logs$LogTraceException
+	at org.eclipse.recommenders.utils.Logs$LogTraceException.newTrace(Logs.java:381)
+	at org.eclipse.recommenders.utils.Logs.log(Logs.java:134)
+	at org.eclipse.recommenders.utils.Logs.log(Logs.java:126)
+	at org.eclipse.recommenders.internal.models.rcp.EclipseModelIndex.suggest(EclipseModelIndex.java:211)
+	at org.eclipse.recommenders.models.SimpleModelProvider.acquireModel(SimpleModelProvider.java:70)
+	at org.eclipse.recommenders.models.PoolingModelProvider.access$0(PoolingModelProvider.java:1)
+	at org.eclipse.recommenders.models.PoolingModelProvider$ModelPoolFactoryMediator.makeObject(PoolingModelProvider.java:96)
+	at org.eclipse.recommenders.models.PoolingModelProvider$ModelPoolFactoryMediator.makeObject(PoolingModelProvider.java:1)
+	at org.apache.commons.pool.impl.GenericKeyedObjectPool.borrowObject(GenericKeyedObjectPool.java:1220)
+	at org.eclipse.recommenders.models.PoolingModelProvider.acquireModel(PoolingModelProvider.java:67)
+	at org.eclipse.recommenders.internal.calls.rcp.RcpCallModelProvider.acquireModel(RcpCallModelProvider.java:65)
+	at org.eclipse.recommenders.internal.calls.rcp.RcpCallModelProvider.acquireModel(RcpCallModelProvider.java:1)
+	at org.eclipse.recommenders.internal.models.rcp.PrefetchModelArchiveJob.run(PrefetchModelArchiveJob.java:43)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:56)
+
+!ENTRY org.eclipse.equinox.p2.transport.ecf 2 0 2018-01-11 08:33:09.333
+!MESSAGE Connection to http://dist.springsource.com/release/STS/doc/updates.xml failed on dist.springsource.com. Retry attempt 0 started
+!STACK 0
+java.net.UnknownHostException: dist.springsource.com
+	at java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.net.InetAddress$2.lookupAllHostAddr(Unknown Source)
+	at java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.net.InetAddress.getAllByName(Unknown Source)
+	at java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.resolveHostname(DefaultClientConnectionOperator.java:262)
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:161)
+	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:144)
+	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:134)
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:612)
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:447)
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:884)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+	at org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer.performConnect(HttpClientRetrieveFileTransfer.java:1084)
+	at org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer.access$0(HttpClientRetrieveFileTransfer.java:1075)
+	at org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer$1.performFileTransfer(HttpClientRetrieveFileTransfer.java:1071)
+	at org.eclipse.ecf.filetransfer.FileTransferJob.run(FileTransferJob.java:74)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:56)
+
+!ENTRY org.eclipse.equinox.p2.transport.ecf 2 0 2018-01-11 08:33:11.380
+!MESSAGE Connection to https://spring.io/blog.atom failed on spring.io. Retry attempt 0 started
+!STACK 0
+java.net.UnknownHostException: spring.io
+	at java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.net.InetAddress$2.lookupAllHostAddr(Unknown Source)
+	at java.net.InetAddress.getAddressesFromNameService(Unknown Source)
+	at java.net.InetAddress.getAllByName0(Unknown Source)
+	at java.net.InetAddress.getAllByName(Unknown Source)
+	at java.net.InetAddress.getAllByName(Unknown Source)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.resolveHostname(DefaultClientConnectionOperator.java:262)
+	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:161)
+	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:144)
+	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:134)
+	at org.apache.http.impl.client.DefaultRequestDirector.tryConnect(DefaultRequestDirector.java:612)
+	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:447)
+	at org.apache.http.impl.client.AbstractHttpClient.doExecute(AbstractHttpClient.java:884)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:82)
+	at org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer.performConnect(HttpClientRetrieveFileTransfer.java:1084)
+	at org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer.access$0(HttpClientRetrieveFileTransfer.java:1075)
+	at org.eclipse.ecf.provider.filetransfer.httpclient4.HttpClientRetrieveFileTransfer$1.performFileTransfer(HttpClientRetrieveFileTransfer.java:1071)
+	at org.eclipse.ecf.filetransfer.FileTransferJob.run(FileTransferJob.java:74)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:56)
+>>>>>>> d3746c983158ddc56dd6aa8f47855d9345f9b6b3
