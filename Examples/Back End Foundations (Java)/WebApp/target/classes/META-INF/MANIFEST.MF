@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: WebApp
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: SBishop
+Implementation-Vendor-Id: com.example
+Build-Jdk: 1.8.0_151
+Implementation-URL: http://projects.spring.io/spring-boot/WebApp/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+
